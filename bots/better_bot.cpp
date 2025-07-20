@@ -1,5 +1,5 @@
 #include <bits/stdc++.h>
-#include "wypisywanie.h"
+#include "../wypisywanie.h"
 #include "interface.h"
 
 using namespace std;
@@ -22,7 +22,7 @@ pii operator-(const pii &a)
 }
 
 const int WIN_LENGTH = 5;
-const pii DIRS[4] = {{0, 1}, {1, 0}, {1, 1}, {1, -1}}; // horiz, vert, diag1, diag2
+const pii DIRECTIONS[4] = {{0, 1}, {1, 0}, {1, 1}, {1, -1}}; // horiz, vert, diag1, diag2
 const pii NEIGHBOURS[8] = {{0, 1}, {1, 0}, {1, 1}, {1, -1}, {0, -1}, {-1, 0}, {-1, -1}, {-1, 1}};
 
 template <typename T1, typename T2>
@@ -55,10 +55,10 @@ struct MapWithRerolls
     }
 };
 
-struct Game : GameCore
+struct Game
 {
     map<pii, char> chboard;
-    map<pii, int8_t> lengths[2][4];
+    map<pii, int> lengths[2][4];
 
     size_t size() const
     {
@@ -71,7 +71,7 @@ struct Game : GameCore
 
         for (int d = 0; d < 4; ++d)
         {
-            pii dir = DIRS[d];
+            pii dir = DIRECTIONS[d];
             int len1 = lengths[player_idx][d][pos + dir];
             int len2 = lengths[player_idx][d][pos + -dir];
             int total = len1 + 1 + len2;
@@ -107,10 +107,7 @@ struct Game : GameCore
         }
 
         // Add border of two
-        min_x -= 2;
-        max_x += 2;
-        min_y -= 2;
-        max_y += 2;
+        min_x -= 2, max_x += 2, min_y -= 2, max_y += 2;
 
         // Print column indexes (hex, only last char)
         cerr << "  ";
@@ -166,8 +163,9 @@ struct Game : GameCore
     void reset()
     {
         chboard.clear();
-        for (int i = 0; i < 8; i++)
-            lengths[i]->clear();
+        for (int i = 0; i < 2; i++)
+            for (int d = 0; d < 4; d++)
+                lengths[i][d].clear();
     }
 } game;
 
@@ -194,8 +192,8 @@ pair<int, int> nextMove()
         array<int, 8> lengths;
         for (int i = 0; i < 4; i++)
         {
-            lengths[i] = game.lengths[0][i][pos + DIRS[i]] + game.lengths[0][i][pos + -DIRS[i]];
-            lengths[4 + i] = game.lengths[1][i][pos + DIRS[i]] + game.lengths[1][i][pos + -DIRS[i]];
+            lengths[i] = game.lengths[0][i][pos + DIRECTIONS[i]] + game.lengths[0][i][pos + -DIRECTIONS[i]];
+            lengths[4 + i] = game.lengths[1][i][pos + DIRECTIONS[i]] + game.lengths[1][i][pos + -DIRECTIONS[i]];
         }
         sort(all(lengths));
         reverse(all(lengths));
@@ -211,7 +209,7 @@ int main()
 {
     string line;
 
-    char player = loadPreviousMoves(game),
+    char player = loadInitialState(game),
          opponent = player ^ 'X' ^ 'O';
 
     game.printBoard();
@@ -225,7 +223,7 @@ int main()
         game.printBoard();
 
 
-        game.move(readPreviousMove(), player);
+        game.move(readOpponentMove(), player);
         game.printBoard();
     }
 }

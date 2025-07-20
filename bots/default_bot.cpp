@@ -1,5 +1,5 @@
 #include <bits/stdc++.h>
-#include "wypisywanie.h"
+#include "../wypisywanie.h"
 #include "interface.h"
 
 using namespace std;
@@ -16,27 +16,27 @@ const pii NEIGHBOURS[8] = {{0, 1}, {1, 0}, {1, 1}, {1, -1}, {0, -1}, {-1, 0}, {-
 
 struct Game
 {
-    map<pii, char> chboard;
+    map<pii, char> board;
     map<pii, int> lengths[2][4];
 
     size_t size() const
     {
-        return chboard.size();
+        return board.size();
     }
     bool move(pii pos, char player)
     {
-        chboard[pos] = player;
+        board[pos] = player;
         int player_idx = (player == 'X' ? 0 : 1);
 
         for (int d = 0; d < 4; ++d)
         {
             pii dir = DIRECTIONS[d];
             int len1 = lengths[player_idx][d][pos + dir];
-            int len2 = lengths[player_idx][d][pos + -dir];
+            int len2 = lengths[player_idx][d][pos - dir];
             int total = len1 + 1 + len2;
 
             lengths[player_idx][d][pos + dir * len1] = total;
-            lengths[player_idx][d][pos + -dir * len2] = total;
+            lengths[player_idx][d][pos - dir * len2] = total;
             lengths[player_idx][d][pos] = total;
         }
 
@@ -52,14 +52,14 @@ struct Game
     {
         // Find board bounds
         int min_x = INT_MAX, max_x = INT_MIN, min_y = INT_MAX, max_y = INT_MIN;
-        for (const auto &[p, c] : chboard)
+        for (const auto &[p, c] : board)
         {
             min_x = min(min_x, p.first);
             max_x = max(max_x, p.first);
             min_y = min(min_y, p.second);
             max_y = max(max_y, p.second);
         }
-        if (chboard.empty())
+        if (board.empty())
         {
             cerr << "Board is empty.\n";
             return;
@@ -90,8 +90,8 @@ struct Game
 
             for (int x = min_x + 1; x < max_x; ++x)
             {
-                auto it = chboard.find({x, y});
-                if (it == chboard.end())
+                auto it = board.find({x, y});
+                if (it == board.end())
                 {
                     cerr << " .";
                 }
@@ -121,7 +121,7 @@ struct Game
 
     void reset()
     {
-        chboard.clear();
+        board.clear();
         for (int i = 0; i < 2; i++)
             for (int d = 0; d < 4; d++)
                 lengths[i][d].clear();
@@ -138,11 +138,11 @@ pair<int, int> nextMove()
 
     // Find candidates
     set<pii> candidates;
-    for (auto [p, c] : game.chboard)
+    for (auto [p, c] : game.board)
     {
         for (auto d : NEIGHBOURS)
         {
-            if (!game.chboard.count(p + d))
+            if (!game.board.count(p + d))
                 candidates.insert(p + d);
         }
     }

@@ -7,88 +7,66 @@
 #include "wypisywanie.h"
 
 using namespace std;
+using pii = pair<int, int>;
+
+pii operator+(const pii &a, const pii &b) { return {a.first + b.first, a.second + b.second}; }
+pii operator*(const pii &a, int &b) { return {a.first * b, a.second * b}; }
+pii operator-(const pii &a) { return {-a.first, -a.second}; }
+pii operator-(const pii &a, const pii &b) { return a + -b; }
 
 const int WIN_LENGTH = 5;
-const int DIRS[4][2] = {{0,1},{1,0},{1,1},{1,-1}}; // horiz, vert, diag1, diag2
+const pii DIRECTIONS[4] = {{0, 1}, {1, 0}, {1, 1}, {1, -1}}; // horiz, vert, diag1, diag2
+const pii NEIGHBOURS[8] = {{0, 1}, {1, 0}, {1, 1}, {1, -1}, {0, -1}, {-1, 0}, {-1, -1}, {-1, 1}};
 
-struct pair_hash {
-    template <class T1, class T2>
-    size_t operator()(const pair<T1, T2>& p) const {
-        return p.second + 0x9e3779b9 + (p.first << 6) + (p.first >> 2);
+struct Game
+{
+    map<pii, char> board;
+    map<pii, int> lengths[2][4];
+
+    size_t size() const
+    {
+        return board.size();
     }
-};
+    bool move(pii pos, char player)
+    {
+        board[pos] = player;
+        int player_idx = (player == 'X' ? 0 : 1);
 
-struct DSU {
-    unordered_map<int, int> parent, size;
+        for (int d = 0; d < 4; ++d)
+        {
+            pii dir = DIRECTIONS[d];
+            int len1 = lengths[player_idx][d][pos + dir];
+            int len2 = lengths[player_idx][d][pos - dir];
+            int total = len1 + 1 + len2;
 
-    int find(int x) {
-        if (!parent.count(x)) {
-            parent[x] = x;
-            size[x] = 1;
+            lengths[player_idx][d][pos + dir * len1] = total;
+            lengths[player_idx][d][pos - dir * len2] = total;
+            lengths[player_idx][d][pos] = total;
         }
-        if (parent[x] != x)
-            parent[x] = find(parent[x]);
-        return parent[x];
+
+        for (int d = 0; d < 4; ++d)
+        {
+            if (lengths[player_idx][d][pos] == WIN_LENGTH)
+                return true;
+        }
+        return false;
     }
 
-    void unite(int x, int y) {
-        int rx = find(x);
-        int ry = find(y);
-        if (rx == ry) return;
-        parent[ry] = rx;
-        size[rx] += size[ry];
+    void reset()
+    {
+        board.clear();
+        for (int i = 0; i < 2; i++)
+            for (int d = 0; d < 4; d++)
+                lengths[i][d].clear();
     }
+} game;
 
-    int getSize(int x) {
-        return size[find(x)];
-    }
-
-    void reset() {
-        parent.clear();
-        size.clear();
-    }
-};
-
-// unordered_map<pair<int, int>, char, pair_hash> board;
-map<pair<int, int>, char> board;
-DSU dsuX[4], dsuO[4];
-
-int pos_hash(int x, int y) {
-    return ((uint(x) + 1000000) * 2000001 + (uint(y) + 1000000));
-}
-
-void reset_game() {
-    board.clear();
-    for (int d = 0; d < 4; ++d) {
-        dsuX[d].reset();
-        dsuO[d].reset();
-    }
-}
+mt19937 ran;
 
 bool apply_move(int x, int y, char player, bool &win) {
-    if (board[{x, y}]) return false;
+    if (game.board.contains({x, y})) return false;
 
-    board[{x, y}] = player;
-    DSU* dsu_arr = (player == 'X') ? dsuX : dsuO;
-
-    for (int d = 0; d < 4; ++d) {
-        int root = pos_hash(x, y);
-        dsu_arr[d].find(root);
-
-        for (int dx = -1; dx <= 1; dx += 2) {
-            int nx = x + dx * DIRS[d][0];
-            int ny = y + dx * DIRS[d][1];
-            if (board[{nx, ny}] == player) {
-                int neighbor = pos_hash(nx, ny);
-                dsu_arr[d].unite(root, neighbor);
-            }
-        }
-
-        if (dsu_arr[d].getSize(root) >= WIN_LENGTH) {
-            win = true;
-        }
-    }
-
+    game.move({x, y}, player);
     return true;
 }
 
@@ -96,7 +74,7 @@ int main() {
     string line;
     while (getline(cin, line)) {
         if (line == "RESET") {
-            reset_game();
+            game.reset();
             cout << "OK RESET\n" << flush;
             continue;
         }

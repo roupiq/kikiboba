@@ -234,11 +234,8 @@ def play_vs_bot(bot_path, human_first=True):
 
 if __name__ == "__main__":
     bots = {
-        "random": "./bots/random_player",
+        "default": "./bots/default_bot",
         "better": "./bots/better_bot",
-        "slow": "./bots/slow_bot",
-        "oom": "./bots/oom_bot",
-        "evil": "./bots/evil_bot",
         # Add more if needed
     }
 
