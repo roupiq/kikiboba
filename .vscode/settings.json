@@ -97,6 +97,8 @@
         "typeinfo": "cpp",
         "variant": "cpp",
         "stdfloat": "cpp",
-        "__nullptr": "cpp"
+        "__nullptr": "cpp",
+        "ios": "cpp",
+        "__node_handle": "cpp"
     }
 }

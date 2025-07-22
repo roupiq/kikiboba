@@ -46,7 +46,7 @@ struct Game
 
         for (int d = 0; d < 4; ++d)
         {
-            if (lengths[player_idx][d][pos] == WIN_LENGTH)
+            if (lengths[player_idx][d][pos] >= WIN_LENGTH)
                 return true;
         }
         return false;
@@ -66,7 +66,7 @@ mt19937 ran;
 bool apply_move(int x, int y, char player, bool &win) {
     if (game.board.contains({x, y})) return false;
 
-    game.move({x, y}, player);
+    win = game.move({x, y}, player);
     return true;
 }
 

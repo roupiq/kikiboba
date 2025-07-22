@@ -6,7 +6,7 @@ using namespace std;
 using pii = pair<int, int>;
 
 pii operator+(const pii &a, const pii &b) { return {a.first + b.first, a.second + b.second}; }
-pii operator*(const pii &a, int &b) { return {a.first * b, a.second * b}; }
+pii operator*(const pii &a, int b) { return {a.first * b, a.second * b}; }
 pii operator-(const pii &a) { return {-a.first, -a.second}; }
 pii operator-(const pii &a, const pii &b) { return a + -b; }
 

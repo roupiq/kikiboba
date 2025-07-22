@@ -12,7 +12,7 @@ pii operator+(const pii &a, const pii &b)
 {
     return {a.first + b.first, a.second + b.second};
 }
-pii operator*(const pii &a, int &b)
+pii operator*(const pii &a, int b)
 {
     return {a.first * b, a.second * b};
 }
@@ -223,7 +223,7 @@ int main()
         game.printBoard();
 
 
-        game.move(readOpponentMove(), player);
+        game.move(readOpponentMove(), opponent);
         game.printBoard();
     }
 }

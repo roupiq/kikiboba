@@ -22,7 +22,7 @@ char loadInitialState(T& game) {
         char p;
         if (sscanf(line.c_str(), "%d %d %c", &x, &y, &p) == 3) {
             game.move({x, y}, p);
-            player = player ^ 'X' ^ 'O'; // toggle between 'X' and 'O'
+            player = p ^ 'X' ^ 'O'; // toggle between 'X' and 'O'
         }
     }
     return player;
