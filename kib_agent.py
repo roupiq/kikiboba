@@ -5,7 +5,7 @@ from collections import defaultdict
 import threading
 from visualizer import TicTacToeVisualizer
 
-TIME_LIMIT = 5.0  # seconds
+TIME_LIMIT = 4.0  # seconds
 MEMORY_LIMIT_MB = 100
 
 # Generate starting positions for infinite tic tac toe (3x3 board, empty or with one move)
@@ -317,8 +317,13 @@ if __name__ == "__main__":
     bots = {
         # "default": "./bots/default_bot",
         "better": "./bots/better_bot",
-        "mcts": "./bots/mcts_bot",
-        "O(1)": "./bots/o1",
+        "mcts5": "./bots/mcts_bot5",
+        # "mcts10": "./bots/mcts_bot10",
+        "mcts_clean": "./bots/mcts_clean",
+        # "weird": "./bots/weird",
+
+        # "clean mcts": "./bots/mcts_clean",
+        # "O(1)": "./bots/o1",
         # Add more if needed
     }
 
@@ -326,8 +331,7 @@ if __name__ == "__main__":
         to_compile = bots.copy()
         to_compile["engine"] = "engine"
         compile_bots(to_compile)
-        print("Bots succesfully compiled. Exiting...")
-        exit(0)
+        print("Bots succesfully compiled!")
 
     mode = input("Choose mode: (1) Tournament  (2) Play vs Bot: ").strip()
 

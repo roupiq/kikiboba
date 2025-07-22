@@ -6,7 +6,6 @@ CELL_SIZE = 40
 GRID_COLOR = (250, 250, 250)
 X_COLOR = (255, 100, 100)
 O_COLOR = (100, 100, 255)
-HIGHLIGHT_COLOR = (155, 155, 155)
 BG_COLOR = (10, 10, 30)
 
 WINDOW_SIZE = 800
@@ -15,17 +14,26 @@ WINDOW_SIZE = 800
 class TicTacToeVisualizer:
     def __init__(self):
         pygame.init()
-        self.screen = pygame.display.set_mode((WINDOW_SIZE, WINDOW_SIZE))
+        self.window = pygame.display.set_mode((WINDOW_SIZE, WINDOW_SIZE), pygame.RESIZABLE | pygame.SCALED)
         pygame.display.set_caption("Infinite Tic Tac Toe")
+        self.base_surface = pygame.Surface((WINDOW_SIZE, WINDOW_SIZE))
+
         self.clock = pygame.time.Clock()
-        self.board = {}  # {(x, y): 'X' or 'O'}
-        self.offset_x = WINDOW_SIZE // 2
-        self.offset_y = WINDOW_SIZE // 2
+        self.board = {}
         self.zoom = 1.0
-        self.recent_moves = []  # list of (x, y)
+        self.target_zoom = 1.0
+        # self.target_offset_x = win_w // 2 - int(center_x * CELL_SIZE * self.target_zoom)
+        # self.target_offset_y = win_h // 2 - int(center_y * CELL_SIZE * self.target_zoom)
+        self.offset_x = WINDOW_SIZE // 2 - int(0 * CELL_SIZE * self.target_zoom)
+        self.offset_y = WINDOW_SIZE // 2 - int(0 * CELL_SIZE * self.target_zoom)
+        self.target_offset_x = self.offset_x
+        self.target_offset_y = self.offset_y
+
+        self.recent_moves = []
         self.history = []
         self.history_index = -1
-
+        self.dragging = False
+        self.last_mouse_pos = (0, 0)
 
     def world_to_screen(self, x, y):
         screen_x = round(x * CELL_SIZE * self.zoom + self.offset_x)
@@ -39,46 +47,43 @@ class TicTacToeVisualizer:
 
     def draw_board(self, board_override=None):
         board = board_override if board_override is not None else self.board
-        self.screen.fill(BG_COLOR)
+        self.base_surface.fill(BG_COLOR)
 
-        # Draw visible grid
-        grid_range = int(WINDOW_SIZE / (CELL_SIZE * self.zoom)) + 4
+        win_w, win_h = self.window.get_size()
+        grid_range_x = int(win_w / (CELL_SIZE * self.zoom)) + 4
+        grid_range_y = int(win_h / (CELL_SIZE * self.zoom)) + 4
         start_x = int(-self.offset_x / (CELL_SIZE * self.zoom)) - 2
         start_y = int(-self.offset_y / (CELL_SIZE * self.zoom)) - 2
 
-        for i in range(start_x, start_x + grid_range):
+        for i in range(start_x, start_x + grid_range_x):
             x = round(i * CELL_SIZE * self.zoom + self.offset_x)
-            pygame.draw.line(self.screen, GRID_COLOR, (x, 0), (x, WINDOW_SIZE))
+            pygame.draw.line(self.base_surface, GRID_COLOR, (x, 0), (x, win_h))
 
-        for j in range(start_y, start_y + grid_range):
+        for j in range(start_y, start_y + grid_range_y):
             y = round(j * CELL_SIZE * self.zoom + self.offset_y)
-            pygame.draw.line(self.screen, GRID_COLOR, (0, y), (WINDOW_SIZE, y))
+            pygame.draw.line(self.base_surface, GRID_COLOR, (0, y), (win_w, y))
 
-        # Draw pieces
         for (x, y), player in board.items():
-
-
             sx, sy = self.world_to_screen(x, y)
             rect = pygame.Rect(sx, sy, CELL_SIZE * self.zoom, CELL_SIZE * self.zoom)
 
-
-            if player == 'X':
-                color = X_COLOR
-            else:
-                color = O_COLOR
+            color = X_COLOR if player == 'X' else O_COLOR
 
             if (x, y) in self.recent_moves:
                 index = self.recent_moves.index((x, y))
-                alpha = int(255 * (0.7 - 0.2 * (3 - index)))  # 0.7, 0.5, 0.3 alpha
+                alpha = int(255 * (0.7 - 0.2 * (3 - index)))
                 highlight_surface = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
                 highlight_surface.fill((*color, alpha))
-                self.screen.blit(highlight_surface, rect.topleft)
+                self.base_surface.blit(highlight_surface, rect.topleft)
 
             font_size = int(0.9 * CELL_SIZE * self.zoom)
             font = pygame.font.SysFont(None, max(font_size, 1))
             img = font.render(player, True, color)
+            self.base_surface.blit(img, (sx + 5 * self.zoom, sy + 5 * self.zoom))
 
-            self.screen.blit(img, (sx + 5 * self.zoom, sy + 5 * self.zoom))
+        # Scale to fit the resized window
+        scaled_surface = pygame.transform.smoothscale(self.base_surface, self.window.get_size())
+        self.window.blit(scaled_surface, (0, 0))
 
     def update_move(self, x, y, player):
         self.board[(x, y)] = player
@@ -87,8 +92,39 @@ class TicTacToeVisualizer:
             self.recent_moves.pop(0)
         self.history.append(copy.deepcopy(self.board))
         self.history_index = len(self.history) - 1
+        self.adjust_view_to_fit()
+
+    def adjust_view_to_fit(self):
+        if not self.board:
+            return
+
+        xs = [x for (x, _) in self.board]
+        ys = [y for (_, y) in self.board]
+        min_x, max_x = min(xs), max(xs)
+        min_y, max_y = min(ys), max(ys)
+
+        board_w = (max_x - min_x + 1) * CELL_SIZE
+        board_h = (max_y - min_y + 1) * CELL_SIZE
+
+        win_w, win_h = self.window.get_size()
+        zoom_x = win_w / (board_w * 1.2)
+        zoom_y = win_h / (board_h * 1.2)
+        self.target_zoom = min(zoom_x, zoom_y, 1.0)
+
+        center_x = (min_x + max_x + 1) / 2
+        center_y = (min_y + max_y + 1) / 2
+        self.target_offset_x = win_w // 2 - int(center_x * CELL_SIZE * self.target_zoom)
+        self.target_offset_y = win_h // 2 - int(center_y * CELL_SIZE * self.target_zoom)
+
+    def interpolate_view(self):
+        # Smoothly interpolate zoom and offset
+        t = 0.015
+        self.zoom += (self.target_zoom - self.zoom) * t
+        self.offset_x += (self.target_offset_x - self.offset_x) * t
+        self.offset_y += (self.target_offset_y - self.offset_y) * t
 
     def run_once(self):
+        self.interpolate_view()
         self.draw_board()
         pygame.display.flip()
         self.clock.tick(60)
@@ -99,43 +135,63 @@ class TicTacToeVisualizer:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.close()
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_LEFT:
-                        self.offset_x += 50
-                    elif event.key == pygame.K_RIGHT:
-                        self.offset_x -= 50
-                    elif event.key == pygame.K_UP:
-                        self.offset_y += 50
-                    elif event.key == pygame.K_DOWN:
-                        self.offset_y -= 50
+                elif event.type == pygame.VIDEORESIZE:
+                    # Only update internal surface
+                    self.base_surface = pygame.Surface((WINDOW_SIZE, WINDOW_SIZE))
+                    self.adjust_view_to_fit()
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:  # Left click
+                    if event.button == 4:  # Zoom in
+                        self.target_zoom *= 1.1
+                    elif event.button == 5:  # Zoom out
+                        self.target_zoom /= 1.1
+                elif event.type == pygame.MOUSEBUTTONUP:
+                    if event.button == 1:
                         x, y = self.screen_to_world(*event.pos)
                         return x, y
-                    elif event.button == 4:
-                        self.zoom *= 1.1
-                    elif event.button == 5:
-                        self.zoom /= 1.1
+
+    
+    def adjust_view_to_fit_from_board(self, board):
+        if not board:
+            return
+
+        xs = [x for (x, _) in board]
+        ys = [y for (_, y) in board]
+        min_x, max_x = min(xs), max(xs)
+        min_y, max_y = min(ys), max(ys)
+
+        board_w = (max_x - min_x + 1) * CELL_SIZE
+        board_h = (max_y - min_y + 1) * CELL_SIZE
+
+        win_w, win_h = self.window.get_size()
+        zoom_x = win_w / (board_w * 1.2)
+        zoom_y = win_h / (board_h * 1.2)
+        self.target_zoom = min(zoom_x, zoom_y, 1.0)
+
+        center_x = (min_x + max_x + 1) / 2
+        center_y = (min_y + max_y + 1) / 2
+        self.target_offset_x = win_w // 2 - int(center_x * CELL_SIZE * self.target_zoom)
+        self.target_offset_y = win_h // 2 - int(center_y * CELL_SIZE * self.target_zoom)
+
 
     def wait_utill_quit(self):
         while True:
-            if 0 <= self.history_index < len(self.history):
-                self.draw_board(self.history[self.history_index])
-            else:
-                self.draw_board()
-
-            pygame.display.flip()
-            self.clock.tick(60)
-
+            self.run_once()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
+                elif event.type == pygame.VIDEORESIZE:
+                    self.base_surface = pygame.Surface((WINDOW_SIZE, WINDOW_SIZE))
+                    self.adjust_view_to_fit()
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_LEFT:
                         self.history_index = max(0, self.history_index - 1)
+                        self.board = copy.deepcopy(self.history[self.history_index])
+                        self.adjust_view_to_fit_from_board(self.board)
                     elif event.key == pygame.K_RIGHT:
                         self.history_index = min(len(self.history) - 1, self.history_index + 1)
+                        self.board = copy.deepcopy(self.history[self.history_index])
+                        self.adjust_view_to_fit_from_board(self.board)
 
-                
+
     def close(self):
         pygame.quit()
