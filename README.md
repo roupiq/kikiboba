@@ -2,13 +2,14 @@ Plik `README.md` zawiera wszelkie informacje o paczce, w szczególności o jej j
 
 ## Stan paczki
 
-| | |
-| --------  | ------------------ |
-| Ogólna jakość paczki | ???     |
-| Jakość testów        | ???     |
-| Jakość brutów/heur   | ???     |
-| Jakość treści        | ???     |
-| Weryfikacja          | TAK/NIE |
+<!-- |                            |         | -->
+| -------------------------- | ------- |
+| Ogólna jakość paczki       | ???     |
+| Jakość silnika do gry      | ???     |
+| Jakość przykładowych botów | ???     |
+| Jakość renderowania        | ???     |
+| Jakość agenta              | ???     |
+| Weryfikacja                | TAK/NIE |
 
 
 <!-- Linki zapisujemy tak: <https://en.wikipedia.org/wiki/Markdown> -->
@@ -17,7 +18,7 @@ Plik `README.md` zawiera wszelkie informacje o paczce, w szczególności o jej j
 **Link do źródła (jeśli dostępny)**: ???
 
 
-## Co można poprawić/dodać do paczki
+## Co można poprawić/dodać do paczkiu
 - upięknić bota przykładowego
 - zmienić sposób korzystania z agenta
 - dodać instrukcję do korzystania z agenta
