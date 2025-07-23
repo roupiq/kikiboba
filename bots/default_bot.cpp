@@ -156,9 +156,13 @@ int main()
     string line;
 
     // Load initial state of the game
-    char player = loadInitialState(game),
-         opponent = player ^ 'X' ^ 'O';
+    auto [player, moves] = loadInitialState();
+    char opponent = player ^ 'X' ^ 'O';
 
+    for(auto [move, p] : moves)
+        game.move(move, p);
+
+    
     game.printBoard();
     while (true)
     {

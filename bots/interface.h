@@ -9,23 +9,22 @@ inline void submitMove(int x, int y) {
 }
 
 // Reads previous moves and applies them to the game
-// T must implement: `bool move(std::pair<int, int>, char)`
-template <typename T>
-char loadInitialState(T& game) {
-    char player = 'X'; // X moves first
+pair<char, vector<pair<pair<int, int>, char>>> loadInitialState() {
+    static char player = 'X'; // X moves first
 
     std::string line;
+    vector<pair<pair<int, int>, char>> moves;
     while (std::getline(std::cin, line)) {
         if (line == "END") break;
 
         int x, y;
         char p;
         if (sscanf(line.c_str(), "%d %d %c", &x, &y, &p) == 3) {
-            game.move({x, y}, p);
+            moves.push_back({{x, y}, p});
             player = p ^ 'X' ^ 'O'; // toggle between 'X' and 'O'
         }
     }
-    return player;
+    return {player, moves};
 }
 
 // Waits for the opponent's move from stdin
@@ -39,3 +38,29 @@ inline std::pair<int, int> readOpponentMove() {
     }
     throw std::runtime_error("Opponent move not received.");
 }
+
+
+/*
+Egzample game between you and your bot:
+// Initial State
+<< 0 0 X
+<< 1 0 O
+<< END
+// Bots turn, you play as O.
+// Bot plays (0, 1) 
+>> 0 1
+// You play (2, 0) 
+<< 2 0
+// Bot plays (0, 2) 
+>> 0 2
+// You play (4, 6) 
+<< 4 6
+// Bot plays (0, 3) 
+>> 0 3
+// You play (2, 1) 
+<< 2 1
+// Bot plays (0, 4) 
+>> 0 4
+// Bot won
+
+*/
