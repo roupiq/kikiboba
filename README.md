@@ -2,7 +2,7 @@ Plik `README.md` zawiera wszelkie informacje o paczce, w szczególności o jej j
 
 ## Stan paczki
 
-<!-- |                            |         | -->
+|                            |         |
 | -------------------------- | ------- |
 | Ogólna jakość paczki       | ???     |
 | Jakość silnika do gry      | ???     |
