@@ -1,0 +1,5 @@
+# always commit text files with LF, even if they are CRLF on disk
+* text=auto
+# always checkout .in and .out files with LF, even if core.autocrlf is set
+*.in eol=lf
+*.out eol=lf
