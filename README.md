@@ -23,6 +23,7 @@ Plik `README.md` zawiera wszelkie informacje o paczce, w szczególności o jej j
 - zmienić sposób korzystania z agenta
 - dodać instrukcję do korzystania z agenta
 - ioi jail
+- można rozegrać turniej wcześniej, a potem tylko oglądać wyniki, żeby było szybciej
 
 ## Uwagi dodatkowe
 Żeby włączyć turniej między botami w folderze bots trzeba pobrać pygame i uruchomić turniej za pomocą komendy python3 kib_agent.py --recompile --render
