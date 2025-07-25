@@ -17,6 +17,8 @@ out/*.out
 *.ps
 !doc/licencja.*
 !doc/logo.*
+!doc/*.tex
+!doc/*.pdf
 
 *.aux
 *.lof
