@@ -1,0 +1,96 @@
+\documentclass{spiral}
+\def\title{Kiki i Buba}
+\def\id{Kik}
+\def\contest{OFF 2025} % np: WWI 2024 -- grupa 0
+\def\desc{} % np: Dzień 4 -- 20 sierpnia 2024
+\def\ML{64 MiB}
+
+\usepackage{hyperref}
+\begin{document}
+\makeheader
+
+Kiki i Buba są dobrymi przyjaciółmi i gdy czasem nudziło im się na lekcji, grali w zeszycie w kółko i krzyżyk.
+Jednak dosyć szybko zorientowali się, że gra zawsze kończy się remisem.
+Postanowili zmodyfikować zasady gry, by ta była ciekawsza. W nowej grze plansza nie jest ograniczona do kratki 3x3,
+ale można grać na całej (nieskończonej) kartce. Dodatkowo w nowej wersji trzeba połączyć aż 5 symboli z rzędu.
+Nowa gra okazała się niezłym wyzwaniem, dlatego aby poćwiczyć, Buba poprosił cię o napisanie bota, z którym będzie mógł się uczyć grać.
+
+\section{Komunikacja}
+
+\noindent Zaimplementuj program, który zagra z Bubą w kółko i krzyżyk. Do komunikacji skorzystaj z dostarczonej biblioteki:
+\texttt{\#include "interface.h"} \\
+
+\noindent Biblioteka udostępnia następujące funkcje:
+\begin{itemize}
+	\item \texttt{void submitMove(int x, int y)} – Funkcja rysuje odpowiednio X lub O (w zależności od tego, którym graczem w danej grze jesteś) w kratce o koordynatach $(x, y)$.
+
+	\item \texttt{pair<char, vector<pair<pair<int, int>, char>}{>}{> loadInitialState()} – Zawołaj tę funkcję raz, na początku wykonywania programu. Funkcja zwróci symbol gracza którym jesteś, listę dotychczasowych ruchów.
+
+	\item \texttt{std::pair<int, int> readOpponentMove()} – Funkcja zwraca ruch przeciwnika. Ta funkcja musi zostać wywołana dokładnie raz po każdym ruchu.
+\end{itemize}
+
+\noindent Twój program nie może otwierać żadnych plików ani używać standardowego wejścia i wyjścia.
+Może korzystać ze standardowego wyjścia diagnostycznego (\texttt{stderr}), jednak pamiętaj, że zużywa to cenny czas.
+
+\noindent Rozwiązanie będzie kompilowane wraz z biblioteką następującym poleceniem:
+\begin{verbatim}
+g++ -O3 -static -std=c++20 kib.cpp -o kib
+\end{verbatim}
+
+\noindent Uwaga: Podane na górze ograniczenie pamięci dotyczy tylko Twojego rozwiązania, a zatem nie wlicza pamięci wykorzystywanej przez bibliotekę.
+
+\section{Przykłady}
+
+\noindent Poniżej możesz zobaczyć przykładową komunikację między Twoim botem a przeciwnikiem (Bubą).
+
+\begin{center}
+	\renewcommand{\arraystretch}{1.4}
+	\begin{tabular}{|c|c|p{6cm}|p{4.5cm}|}
+		\hline
+		\textbf{Ruch} & \textbf{Wywołania funkcji}                                                    & \textbf{Opis}                                                                  \\
+		\hline
+		0             & \texttt{loadInitialState(Game) → \{'X',\{\{\{0,0\},'X'\},\{\{1,0\},'O'\}\}\}} & Bot wczytuje początkowy stan gry (X na pozycji $(0,0)$ i O na pozycji $(1,0)$) \\
+		\hline
+		1             & \texttt{submitMove(0, 1)}                                                     & Bot zagrywa w $(0, 1)$.                                                        \\
+		\hline
+		2             & \texttt{readOpponentMove() → (1, 1)}                                          & Bot otrzymuje kolejny ruch Buby.                                               \\
+		\hline
+		3             & \texttt{submitMove(0, 2)}                                                     & Bot zagrywa w $(0, 2)$.                                                        \\
+		\hline
+		4             & \texttt{readOpponentMove() → (1, 2)}                                          & Buba gra dalej w tej samej kolumnie.                                           \\
+		\hline
+		5             & \texttt{submitMove(0, 3)}                                                     & Bot buduje linię w kolumnie 0.                                                 \\
+		\hline
+		6             & \texttt{readOpponentMove() → (1, 3)}                                          & Ruch przeciwnika.                                                              \\
+		\hline
+		7             & \texttt{submitMove(0, 4)}                                                     & Bot zagrywa piąty symbol w pionie i wygrywa.                                   \\
+		\hline
+	\end{tabular}
+\end{center}
+
+\bigskip
+
+\noindent
+\noindent Po tej sekwencji Twój bot ma następujące ruchy: (0, 0), (0, 1), (0, 2), (0, 3), (0, 4) — tworzy więc pionową piątkę i wygrywa grę.
+
+Buba próbował przerywać linię, ale robił to równolegle: (1, 0), (1, 1), (1, 2), (1, 3) – co było nieskuteczne.
+
+
+% Tutaj możesz dodać przykłady, jeśli chcesz
+
+\section{Ocenianie}
+\noindent Twój bot pod koniec obozu weźmie udział w turnieju, w którym rozegra parę rozgrywek,
+zaczynając od wylosowanej pozycji. Punktacja będzie odwrotnie proporcjonalna do miejsca zajętego w turnieju.
+Dodatkowo w trakcie trwania konkursu przewidujemy turnieje testowe, na których będzie można zmierzyć się z innymi zawodnikami.
+Na wykonanie jednego ruchu będziesz miał $0.25$s. Jeśli masz pytania dotyczące działania biblioteki lub zasad gry, możesz zgłaszać je przez sio2.
+
+% \newpage
+% \begin{center}
+%   \includegraphics[scale=0.4]{obrazek.png}
+% \end{center}
+
+\vfill
+\noindent PS: Grę możesz znaleźć pod linkiem \href{https://tic.netlify.app/}{https://tic.netlify.app/}
+
+
+\end{document}
