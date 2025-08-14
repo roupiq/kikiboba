@@ -315,11 +315,12 @@ if __name__ == "__main__":
     args = parse_args()
 
     bots = {
-        # "default": "./bots/default_bot",
-        "better": "./bots/better_bot",
-        "mcts5": "./bots/mcts_bot5",
+        "default": "./bots/default_bot",
+        # "better": "./bots/better_bot",
+        "o1": "./my_bots/o1",
+        # "mcts": "./my_bots/mcts",z
         # "mcts10": "./bots/mcts_bot10",
-        "mcts_clean": "./bots/mcts_clean",
+        # "mcts_clean": "./bots/mcts_clean",
         # "weird": "./bots/weird",
 
         # "clean mcts": "./bots/mcts_clean",
