@@ -5,8 +5,8 @@ from collections import defaultdict
 import threading
 from visualizer import TicTacToeVisualizer
 
-TIME_LIMIT = 4.0  # seconds
-MEMORY_LIMIT_MB = 100
+TIME_LIMIT = 1.0  # seconds
+MEMORY_LIMIT_MB = 128
 
 # Generate starting positions for infinite tic tac toe (3x3 board, empty or with one move)
 STARTING_POSITIONS = [
@@ -311,8 +311,6 @@ def compile_bots(bot_paths):
             result = subprocess.run(["g++", "-O3", "-std=c++20", "-o", out_path, path])
             if result.returncode != 0:
                 print(f"Failed to compile {name} ({path})")
-            else:
-                print(f"Compiled {name} -> {out_path}")
     for name, _ in bot_paths.items():
         bot_paths[name] = _.replace(".cpp", "")
 
@@ -325,8 +323,9 @@ if __name__ == "__main__":
     if args.path:
         for fname in os.listdir(args.path):
             fpath = os.path.join(args.path, fname)
-            if os.path.isfile(fpath) and os.access(fpath, os.X_OK):
-                bots[fname] = fpath
+            print(fpath)
+            if fpath[-4:] == '.cpp':
+                bots[fname[:-4]] = fpath[:-4]
     
     if args.recompile:
         to_compile = bots.copy()
