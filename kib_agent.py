@@ -287,6 +287,7 @@ def play_vs_bot(bot_path, human_first=True):
 
 
 import argparse
+import os
 
 
 def parse_args():
@@ -294,7 +295,9 @@ def parse_args():
         description="Run a bot tournament match or play against one."
     )
     parser.add_argument("--recompile", action="store_true", help="Recompile each bot")
-    parser.add_argument("--render", action="store_true", help="Recompile each bot")
+    parser.add_argument("--path", help="Path to folder with bots")
+    parser.add_argument("--render", action="store_true", help="Render games")
+
     return parser.parse_args()
 
 
@@ -317,11 +320,14 @@ def compile_bots(bot_paths):
 if __name__ == "__main__":
     args = parse_args()
 
-    bots = {
-        "default": "./bots/default_bot",
-        "better": "./bots/better_bot",
-    }
 
+    bots = {}
+    if args.path:
+        for fname in os.listdir(args.path):
+            fpath = os.path.join(args.path, fname)
+            if os.path.isfile(fpath) and os.access(fpath, os.X_OK):
+                bots[fname] = fpath
+    
     if args.recompile:
         to_compile = bots.copy()
         to_compile["engine"] = "engine"

@@ -27,6 +27,7 @@ Plik `README.md` zawiera wszelkie informacje o paczce, w szczególności o jej j
 - lepsza kompilacja (bez przekompilowywania plików które się nie zmieniły)
 - złościwe boty do testowania
 - lepsze pozycje początkowe
+- sprawdzić czy działa na WINDOWS
 
 ## Uwagi dodatkowe
 Żeby włączyć turniej między botami w folderze bots trzeba pobrać pygame i uruchomić turniej za pomocą komendy python3 kib_agent.py --recompile --render
