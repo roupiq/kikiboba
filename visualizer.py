@@ -1,4 +1,3 @@
-import pygame
 import sys
 import copy
 
@@ -13,12 +12,19 @@ WINDOW_SIZE = 800
 
 class TicTacToeVisualizer:
     def __init__(self):
-        pygame.init()
-        self.window = pygame.display.set_mode((WINDOW_SIZE, WINDOW_SIZE), pygame.RESIZABLE | pygame.SCALED)
-        pygame.display.set_caption("Infinite Tic Tac Toe")
-        self.base_surface = pygame.Surface((WINDOW_SIZE, WINDOW_SIZE))
+        try:
+            import pygame
+            self.pygame = pygame
+        except:
+            print("To run game with render enabled install pygame: https://www.pygame.org/news")
+            exit(1)
 
-        self.clock = pygame.time.Clock()
+        self.pygame.init()
+        self.window = self.pygame.display.set_mode((WINDOW_SIZE, WINDOW_SIZE), pygame.RESIZABLE | pygame.SCALED)
+        self.pygame.display.set_caption("Infinite Tic Tac Toe")
+        self.base_surface = self.pygame.Surface((WINDOW_SIZE, WINDOW_SIZE))
+
+        self.clock = self.pygame.time.Clock()
         self.board = {}
         self.zoom = 1.0
         self.target_zoom = 1.0
@@ -57,32 +63,32 @@ class TicTacToeVisualizer:
 
         for i in range(start_x, start_x + grid_range_x):
             x = round(i * CELL_SIZE * self.zoom + self.offset_x)
-            pygame.draw.line(self.base_surface, GRID_COLOR, (x, 0), (x, win_h))
+            self.pygame.draw.line(self.base_surface, GRID_COLOR, (x, 0), (x, win_h))
 
         for j in range(start_y, start_y + grid_range_y):
             y = round(j * CELL_SIZE * self.zoom + self.offset_y)
-            pygame.draw.line(self.base_surface, GRID_COLOR, (0, y), (win_w, y))
+            self.pygame.draw.line(self.base_surface, GRID_COLOR, (0, y), (win_w, y))
 
         for (x, y), player in board.items():
             sx, sy = self.world_to_screen(x, y)
-            rect = pygame.Rect(sx, sy, CELL_SIZE * self.zoom, CELL_SIZE * self.zoom)
+            rect = self.pygame.Rect(sx, sy, CELL_SIZE * self.zoom, CELL_SIZE * self.zoom)
 
             color = X_COLOR if player == 'X' else O_COLOR
 
             if (x, y) in self.recent_moves:
                 index = self.recent_moves.index((x, y))
                 alpha = int(255 * (0.7 - 0.2 * (3 - index)))
-                highlight_surface = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
+                highlight_surface = self.pygame.Surface((rect.width, rect.height), self.pygame.SRCALPHA)
                 highlight_surface.fill((*color, alpha))
                 self.base_surface.blit(highlight_surface, rect.topleft)
 
             font_size = int(0.9 * CELL_SIZE * self.zoom)
-            font = pygame.font.SysFont(None, max(font_size, 1))
+            font = self.pygame.font.SysFont(None, max(font_size, 1))
             img = font.render(player, True, color)
             self.base_surface.blit(img, (sx + 5 * self.zoom, sy + 5 * self.zoom))
 
         # Scale to fit the resized window
-        scaled_surface = pygame.transform.smoothscale(self.base_surface, self.window.get_size())
+        scaled_surface = self.pygame.transform.smoothscale(self.base_surface, self.window.get_size())
         self.window.blit(scaled_surface, (0, 0))
 
     def update_move(self, x, y, player):
@@ -126,25 +132,25 @@ class TicTacToeVisualizer:
     def run_once(self):
         self.interpolate_view()
         self.draw_board()
-        pygame.display.flip()
+        self.pygame.display.flip()
         self.clock.tick(60)
 
     def get_human_move(self):
         while True:
             self.run_once()
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
+            for event in self.pygame.event.get():
+                if event.type == self.pygame.QUIT:
                     self.close()
-                elif event.type == pygame.VIDEORESIZE:
+                elif event.type == self.pygame.VIDEORESIZE:
                     # Only update internal surface
-                    self.base_surface = pygame.Surface((WINDOW_SIZE, WINDOW_SIZE))
+                    self.base_surface = self.pygame.Surface((WINDOW_SIZE, WINDOW_SIZE))
                     self.adjust_view_to_fit()
-                elif event.type == pygame.MOUSEBUTTONDOWN:
+                elif event.type == self.pygame.MOUSEBUTTONDOWN:
                     if event.button == 4:  # Zoom in
                         self.target_zoom *= 1.1
                     elif event.button == 5:  # Zoom out
                         self.target_zoom /= 1.1
-                elif event.type == pygame.MOUSEBUTTONUP:
+                elif event.type == self.pygame.MOUSEBUTTONUP:
                     if event.button == 1:
                         x, y = self.screen_to_world(*event.pos)
                         return x, y
@@ -176,22 +182,22 @@ class TicTacToeVisualizer:
     def wait_utill_quit(self):
         while True:
             self.run_once()
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
+            for event in self.pygame.event.get():
+                if event.type == self.pygame.QUIT:
                     return
-                elif event.type == pygame.VIDEORESIZE:
-                    self.base_surface = pygame.Surface((WINDOW_SIZE, WINDOW_SIZE))
+                elif event.type == self.pygame.VIDEORESIZE:
+                    self.base_surface = self.pygame.Surface((WINDOW_SIZE, WINDOW_SIZE))
                     self.adjust_view_to_fit()
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_LEFT:
+                elif event.type == self.pygame.KEYDOWN:
+                    if event.key == self.pygame.K_LEFT:
                         self.history_index = max(0, self.history_index - 1)
                         self.board = copy.deepcopy(self.history[self.history_index])
                         self.adjust_view_to_fit_from_board(self.board)
-                    elif event.key == pygame.K_RIGHT:
+                    elif event.key == self.pygame.K_RIGHT:
                         self.history_index = min(len(self.history) - 1, self.history_index + 1)
                         self.board = copy.deepcopy(self.history[self.history_index])
                         self.adjust_view_to_fit_from_board(self.board)
 
 
     def close(self):
-        pygame.quit()
+        self.pygame.quit()

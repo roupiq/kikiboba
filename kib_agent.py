@@ -83,6 +83,7 @@ def validate_move(engine, x, y, player):
 def run_match(bot1_path, bot2_path, initial_position="", verbose=True, render=True):
     if render:
         vis = TicTacToeVisualizer()
+    
     engine = start_engine()
     bots = [start_bot(bot1_path), start_bot(bot2_path)]
 
@@ -90,9 +91,11 @@ def run_match(bot1_path, bot2_path, initial_position="", verbose=True, render=Tr
     if initial_position:
         for line in initial_position.strip().split("\n"):
             x, y, p = line.split()
+
             if render:
                 vis.update_move(int(x), int(y), p)
-                validate_move(engine, x, y, p)
+            
+            validate_move(engine, x, y, p)
 
 
     players = ["X", "O"]
@@ -106,9 +109,9 @@ def run_match(bot1_path, bot2_path, initial_position="", verbose=True, render=Tr
 
     print(initial_position)
     while True:
-        # print('move')
         if render:
-            time.sleep(0.001)
+            time.sleep(0.01)
+
         bot_proc, bot_ps = bots[turn]
         opponent_move = last_moves[turn]
 
@@ -316,16 +319,7 @@ if __name__ == "__main__":
 
     bots = {
         "default": "./bots/default_bot",
-        # "better": "./bots/better_bot",
-        "o1": "./my_bots/o1",
-        # "mcts": "./my_bots/mcts",z
-        # "mcts10": "./bots/mcts_bot10",
-        # "mcts_clean": "./bots/mcts_clean",
-        # "weird": "./bots/weird",
-
-        # "clean mcts": "./bots/mcts_clean",
-        # "O(1)": "./bots/o1",
-        # Add more if needed
+        "better": "./bots/better_bot",
     }
 
     if args.recompile:

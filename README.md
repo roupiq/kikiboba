@@ -13,17 +13,20 @@ Plik `README.md` zawiera wszelkie informacje o paczce, w szczególności o jej j
 
 
 <!-- Linki zapisujemy tak: <https://en.wikipedia.org/wiki/Markdown> -->
-**Link do probseta**: ???
+**Link do probseta**: brak
 
-**Link do źródła (jeśli dostępny)**: ???
+**Link do źródła (jeśli dostępny)**: brak
 
 
-## Co można poprawić/dodać do paczkiu
+## Co można poprawić/dodać do paczki
 - upięknić bota przykładowego
 - zmienić sposób korzystania z agenta
-- dodać instrukcję do korzystania z agenta
+- dodać instrukcję do korzystania z agenta (korzystanie tylko przy pomocy terminala bez konieczności zmieniania kodu)
 - ioi jail
 - można rozegrać turniej wcześniej, a potem tylko oglądać wyniki, żeby było szybciej
+- lepsza kompilacja (bez przekompilowywania plików które się nie zmieniły)
+- złościwe boty do testowania
+- lepsze pozycje początkowe
 
 ## Uwagi dodatkowe
 Żeby włączyć turniej między botami w folderze bots trzeba pobrać pygame i uruchomić turniej za pomocą komendy python3 kib_agent.py --recompile --render
