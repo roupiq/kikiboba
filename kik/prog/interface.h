@@ -13,7 +13,7 @@ inline void submitMove(int x, int y)
 }
 
 // Reads previous moves and applies them to the game
-std::pair<char, std::vector<std::pair<std::pair<int, int>, char>>> loadInitialState()
+std::pair<char, std::vector<std::pair<std::pair<int, int>, char>>> readInitialState()
 {
     static char player = 'X'; // X moves first
 

@@ -156,7 +156,7 @@ int main()
     string line;
 
     // Load initial state of the game
-    auto [player, moves] = loadInitialState();
+    auto [player, moves] = readInitialState();
     char opponent = player ^ 'X' ^ 'O';
 
     for(auto [move, p] : moves)
