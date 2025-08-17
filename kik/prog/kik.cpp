@@ -1,16 +1,11 @@
-#include <iostream>
-#include <unordered_map>
-#include <map>
-#include <vector>
-#include <string>
-#include <sstream>
-#include "wypisywanie.h"
+#include <bits/stdc++.h>
+#include "interface.h"
 
 using namespace std;
 using pii = pair<int, int>;
 
 pii operator+(const pii &a, const pii &b) { return {a.first + b.first, a.second + b.second}; }
-pii operator*(const pii &a, int &b) { return {a.first * b, a.second * b}; }
+pii operator*(const pii &a, int b) { return {a.first * b, a.second * b}; }
 pii operator-(const pii &a) { return {-a.first, -a.second}; }
 pii operator-(const pii &a, const pii &b) { return a + -b; }
 
@@ -46,7 +41,7 @@ struct Game
 
         for (int d = 0; d < 4; ++d)
         {
-            if (lengths[player_idx][d][pos] >= WIN_LENGTH)
+            if (lengths[player_idx][d][pos] == WIN_LENGTH)
                 return true;
         }
         return false;
@@ -63,41 +58,47 @@ struct Game
 
 mt19937 ran;
 
-bool apply_move(int x, int y, char player, bool &win) {
-    if (game.board.contains({x, y})) return false;
+pair<int, int> nextMove()
+{
+    // If none of the tiles are placed return {0, 0}
+    if (game.size() == 0UL)
+        return {0, 0};
 
-    win = game.move({x, y}, player);
-    return true;
-}
-
-int main() {
-    string line;
-    while (getline(cin, line)) {
-        if (line == "RESET") {
-            game.reset();
-            cout << "OK RESET\n" << flush;
-            continue;
+    // Find candidates
+    set<pii> candidates;
+    for (auto [p, c] : game.board)
+    {
+        for (auto d : NEIGHBOURS)
+        {
+            if (!game.board.count(p + d))
+                candidates.insert(p + d);
         }
-
-        int x, y;
-        char player;
-        istringstream iss(line);
-        if (!(iss >> x >> y >> player)) {
-            cout << "ERR\n" << flush;
-            cerr << "Invalid format, got: " << line << ", expected <x> <y> <player>" << flush;
-            continue;
-        }
-
-        bool win = false;
-        bool success = apply_move(x, y, player, win);
-        if (!success) {
-            cout << "ERR\n" << flush;
-            cerr << "Invalid move\n" << flush;
-        } else {
-            cout << "OK " << (win ? "WIN" : "CONTINUE") << "\n" << flush;
-        }
-        // cout << board << "\n";
     }
 
-    return 0;
+    // return random candidate
+    return vector<pii>(candidates.begin(), candidates.end())[ran() % candidates.size()];
+}
+
+int main()
+{
+    string line;
+
+    // Load initial state of the game
+    auto [player, moves] = loadInitialState();
+    char opponent = player ^ 'X' ^ 'O';
+
+    for(auto [move, p] : moves)
+        game.move(move, p);
+
+    
+    while (true)
+    {
+        // choose next move
+        auto [mx, my] = nextMove();
+        submitMove(mx, my);
+
+        game.move({mx, my}, player);
+
+        game.move(readOpponentMove(), opponent);
+    }
 }

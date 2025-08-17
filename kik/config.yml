@@ -1,3 +1,15 @@
 title: Kiki i Buba
 sinol_task_id: kik
 sinol_contest_type: oi
+memory_limit: 65536
+time_limits:
+  0: 250
+sinol_expected_scores:
+  kik.cpp:
+    expected:
+      0: {points: 0, status: OK}
+    points: 0
+  kikb.cpp:
+    expected:
+      0: {points: 0, status: WA}
+    points: 0
