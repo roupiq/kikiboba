@@ -1,10 +1,14 @@
+/**
+ * Silnik do gry w nieskończone kółko i krzyżyk.
+ */
+
+
 #include <iostream>
 #include <unordered_map>
 #include <map>
 #include <vector>
 #include <string>
 #include <sstream>
-#include "wypisywanie.h"
 
 using namespace std;
 using pii = pair<int, int>;
@@ -15,8 +19,8 @@ pii operator-(const pii &a) { return {-a.first, -a.second}; }
 pii operator-(const pii &a, const pii &b) { return a + -b; }
 
 const int WIN_LENGTH = 5;
+const int MAX_GAME_LENGTH = 1024;
 const pii DIRECTIONS[4] = {{0, 1}, {1, 0}, {1, 1}, {1, -1}}; // horiz, vert, diag1, diag2
-const pii NEIGHBOURS[8] = {{0, 1}, {1, 0}, {1, 1}, {1, -1}, {0, -1}, {-1, 0}, {-1, -1}, {-1, 1}};
 
 struct Game
 {
@@ -61,8 +65,6 @@ struct Game
     }
 } game;
 
-mt19937 ran;
-
 bool apply_move(int x, int y, char player, bool &win)
 {
     if (game.board.contains({x, y}))
@@ -89,18 +91,22 @@ int main()
                  << flush;
             continue;
         }
-
+        
         int x, y;
         char player;
         istringstream iss(line);
         if (!(iss >> x >> y >> player))
         {
             cout << "ERR\n"
-                 << flush;
+            << flush;
             cerr << "Invalid format, got: " << line << ", expected <x> <y> <player>" << flush;
             continue;
         }
-
+        if(game.size() == MAX_GAME_LENGTH - 1)
+        {
+            cout << "OK WIN\n" << flush;
+        }
+        
         bool win = false;
         bool success = apply_move(x, y, player, win);
         if (!success)
@@ -116,6 +122,4 @@ int main()
                  << flush;
         }
     }
-
-    return 0;
 }
