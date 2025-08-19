@@ -3,7 +3,8 @@ sinol_task_id: kik
 sinol_contest_type: oi
 memory_limit: 65536
 time_limits:
-  0: 250
+  0: 100
+extra_compilation_files: [interface.h]
 sinol_expected_scores:
   kik.cpp:
     expected:

@@ -5,7 +5,7 @@ from collections import defaultdict
 import threading
 
 
-TIME_LIMIT = 0.25  # seconds
+TIME_LIMIT = 0.1  # seconds
 MEMORY_LIMIT_MB = 64
 
 

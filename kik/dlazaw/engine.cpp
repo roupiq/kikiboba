@@ -19,7 +19,7 @@ pii operator-(const pii &a) { return {-a.first, -a.second}; }
 pii operator-(const pii &a, const pii &b) { return a + -b; }
 
 const int WIN_LENGTH = 5;
-const int MAX_GAME_LENGTH = 1024;
+const int MAX_GAME_LENGTH = 512;
 const pii DIRECTIONS[4] = {{0, 1}, {1, 0}, {1, 1}, {1, -1}}; // horiz, vert, diag1, diag2
 
 struct Game
